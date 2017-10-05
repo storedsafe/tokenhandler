@@ -39,7 +39,7 @@ os.umask(0066)
 def main():
 	checkDir(homeDir)
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "lco" )
+		opts, args = getopt.getopt(sys.argv[1:], "lco", ["login", "logout", "check", "help"] )
 	except getopt.GetoptError as err:
 		print(err)
 		usage()
