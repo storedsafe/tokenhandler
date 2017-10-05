@@ -85,7 +85,12 @@ Logout successful.
 ```
 
 ## Limitations / Known issues
-None.
+
+Script tries to ensure fairly strict permissions on the actual rc-file and the users home directory. If it finds any of those insufficient, it will print an error message and exit.
+
+```~/.storedsafe-client.rc``` is expected to be only readable and writeable by it's owner.
+
+The users home directory (~) is expected to be only readable and writeable by it's owner and possibly read permissions for the users group.
 
 ## License
 GPL
