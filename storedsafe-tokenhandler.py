@@ -83,31 +83,31 @@ def login():
 				line = re.sub('username:([a-zA-Z0-9]+)\n$', r'\1', line)
 				answer = str(raw_input("Username is set to \"" + line + "\", do you want to keep it? (<Y>/n): "))
 				if answer == ('n' or 'N'):
-					userName = str(raw_input('Enter Username: '))
+					userName = str(raw_input('Enter username: '))
 				else:
 					userName = line
 			if "mysite" in line:
 				line = re.sub('mysite:([a-zA-Z0-9.]+)\n$', r'\1', line)
 				answer = str(raw_input("Site is set to \"" + line + "\", do you want to keep it? (<Y>/n): "))
 				if answer == ('n' or 'N'):
-					mysite = str(raw_input('Enter Site (storedsafe.example.com): '))
+					mysite = str(raw_input('Enter site (storedsafe.example.com): '))
 				else:
 					mysite = line
 			if "apikey" in line:
 				line = re.sub('apikey:([a-zA-Z0-9]+)\n$', r'\1', line)
-				answer = str(raw_input("Apikey is set to \"" + line + "\", do you want to keep it? (<Y>/n): "))
+				answer = str(raw_input("API key is set to \"" + line + "\", do you want to keep it? (<Y>/n): "))
 				if answer == ('n' or 'N'):
-					apiKey = str(raw_input('Enter Apikey: '))
+					apiKey = str(raw_input('Enter API key: '))
 				else:
 					apiKey = line
 		file_.close()
 	else:
-		userName = str(raw_input("Enter Username: "))
-		apiKey = str(raw_input("Enter Apikey: "))
-		mysite = str(raw_input("Enter Site (storedsafe.example.com): "))
+		userName = str(raw_input("Enter username: "))
+		apiKey = str(raw_input("Enter API key: "))
+		mysite = str(raw_input("Enter site (storedsafe.example.com): "))
 
-	passWord = getpass.getpass('Enter Password: ')
-	otp = getpass.getpass('Press Yubikey: ')
+	passWord = getpass.getpass('Enter ' + userName + '\'s passphrase: ')
+	otp = getpass.getpass('Press ' + userName + '\'s Yubikey: ')
 
 	try:
 		loginJson = {
