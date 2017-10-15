@@ -49,11 +49,11 @@ Login to the StoredSafe appliance. This will aquire a valid token which can be u
 
 ```
 $ storedsafe-tokenhandler.py --login
-Enter Username: sven
-Enter Apikey: AnAPIKey
-Enter Site (storedsafe.example.com): safe.domain.cc
-Enter Password: <secret password entered>
-Press Yubikey: <OTP generated>
+Enter username: sven
+Enter API key: AnAPIKey
+Enter site (storedsafe.example.com): safe.domain.cc
+Enter sven's passphrase: <secret password entered>
+Press sven's Yubikey: <OTP generated>
 200 OK
 Login succeeded, please remember to log out when done.
 ```
@@ -61,11 +61,11 @@ If a previous login has been done (the ```~/.storedsafe-client.rc``` exists), in
 
 ```
 $ storedsafe-tokenhandler.py --login
-Apikey is set to "AnAPIKey", do you want to keep it? (<Y>/n):
+API key is set to "AnAPIKey", do you want to keep it? (<Y>/n):
 Site is set to "safe.domain.cc", do you want to keep it? (<Y>/n):
 Username is set to "sven", do you want to keep it? (<Y>/n):
-Enter Password: <secret password entered>
-Press Yubikey: <OTP generated>
+Enter sven's passphrase: <secret password entered>
+Press sven's Yubikey: <OTP generated>
 200 OK
 Login succeeded, please remember to log out when done.
 ```
