@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-when          who                     why             what
+when          who                     what
+20181113      fredrik@storedsafe.com  added TOTP as a 2FA mechanism
 20171005      fredrik@storedsafe.com  added timeout and permissions check
 20170601      norin@storedsafe.com    login/refresh   Created
 
@@ -26,9 +27,9 @@ import syslog
 from os.path import expanduser
 
 __author__     = "Peter Norin"
-__copyright__  = "Copyright 2017, AB StoredSafe"
+__copyright__  = "Copyright 2018, AB StoredSafe"
 __license__    = "GPL"
-__version__    = "1.0.2"
+__version__    = "1.0.3"
 __maintainer__ = "Peter Norin"
 __email__      = "norin@storedsafe.com"
 __status__     = "Production"

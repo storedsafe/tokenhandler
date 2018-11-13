@@ -21,6 +21,7 @@ Usage: storedsafe-tokenhandler.py [-loc]
  --login (or -l)	To login to the StoredSafe appliance
  --logout (or -o)	To logout from the StoredSafe appliance
  --check (or -c)	To check/refresh already obtained token
+ --totp (or -t)		Use a TOTP token, instead of a Yubikey OTP token
 
 All actions require that you firstly authenticate in order to obtain a token.
 Once you have a token you can use it to authenticate new REST operations.
@@ -42,6 +43,11 @@ Authentication information is saved to ~/.storedsafe-client.rc, be sure to prote
 --check
 ```
 > Renews the lifetime of the aquired token and ensures connectivity to the StoredSafe appliance. Can be scheduled with cron(1).
+
+```
+--totp
+```
+> Use a TOTP token, instead of a Yubikey OTP token.
 
 Usage
 =====
@@ -66,6 +72,19 @@ Site is set to "safe.domain.cc", do you want to keep it? (<Y>/n):
 Username is set to "sven", do you want to keep it? (<Y>/n):
 Enter sven's passphrase: <secret password entered>
 Press sven's Yubikey: <OTP generated>
+200 OK
+Login succeeded, please remember to log out when done.
+```
+
+The same, but using TOTP instead of a Yubico OTP.
+
+```
+$ storedsafe-tokenhandler.py --login
+API key is set to "AnAPIKey", do you want to keep it? (<Y>/n):
+Site is set to "safe.domain.cc", do you want to keep it? (<Y>/n):
+Username is set to "sven", do you want to keep it? (<Y>/n):
+Enter sven's passphrase: <secret password entered>
+Enter TOTP for sven@safe.domain.cc: 444333
 200 OK
 Login succeeded, please remember to log out when done.
 ```
