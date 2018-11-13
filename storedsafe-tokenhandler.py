@@ -34,12 +34,15 @@ __email__      = "norin@storedsafe.com"
 __status__     = "Production"
 
 homeDir = expanduser("~")
+_totp = False
 os.umask(0066)
 
 def main():
+	global _totp
+	_login = _logout = _check = False
 	checkDir(homeDir)
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "lco", ["login", "logout", "check", "help"] )
+		opts, args = getopt.getopt(sys.argv[1:], "lcot", ["login", "logout", "check", "totp", "help"] )
 	except getopt.GetoptError as err:
 		print(err)
 		usage()
@@ -50,26 +53,38 @@ def main():
 		usage()
 		sys.exit(2)
 	for o, a in opts:
+		if o in ("-t", "--totp"):
+			_totp = True
+			continue
 		if o in ("-l", "--login"):
-			login()
-			break
+			_login = True
+			continue
 		if o in ("-o", "--logout"):
-			logout()
-			break
+			_logout = True
+			continue
 		elif o in ("-h", "--help"):
 			usage()
 			sys.exit()
 		elif o in ("-c", "--check"):
-			check()
-			break
+			_check = True
+			continue
 		else:
 			assert False, "unhandled option"
+
+	if (_login):
+		login()
+	if (_logout):
+		logout()
+	if (_check):
+		check()
+	sys.exit()
 
 def usage():
 	print("Usage: %s [-loc]" % sys.argv[0])
 	print " --login (or -l)	To login to the StoredSafe appliance"
 	print " --logout (or -o)	To logout from the StoredSafe appliance"
-	print " --check (or -c)	To check/refresh already obtained token\n"
+	print " --check (or -c)	To check/refresh already obtained token"
+	print " --totp (or -t)		Use a TOTP token, instead of a Yubikey OTP token\n"
 	print "All actions require that you firstly authenticate in order to obtain a token."
 	print "Once you have a token you can use it to authenticate new REST operations.\n"
 	print "Authentication information is saved to ~/.storedsafe-client.rc, be sure to protect it properly."
@@ -107,13 +122,25 @@ def login():
 		mysite = str(raw_input("Enter site (storedsafe.example.com): "))
 
 	passWord = getpass.getpass('Enter ' + userName + '\'s passphrase: ')
-	otp = getpass.getpass('Press ' + userName + '\'s Yubikey: ')
+	if (_totp):
+		totp = str(raw_input('Enter TOTP for ' + userName + '@' + mysite + ': '))
+	else:
+		otp = getpass.getpass('Press ' + userName + '\'s Yubikey: ')
 
 	try:
-		loginJson = {
-			'username':userName,
-			'keys':passWord + apiKey + otp
-		}
+		if (_totp):
+			loginJson = {
+				'username':userName,
+				'passphrase':passWord,
+				'otp':totp,
+				'apikey':apiKey,
+				'logintype':'totp'
+			}
+		else:
+			loginJson = {
+				'username':userName,
+				'keys':passWord + apiKey + otp
+			}
 		c = httplib.HTTPSConnection(mysite, context=ssl._create_unverified_context())
 		c.request("POST", "/api/1.0/auth", json.dumps(loginJson))
 	except:
