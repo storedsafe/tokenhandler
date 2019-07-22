@@ -168,7 +168,7 @@ The directory to hold the RC file (```--file``` option) is expected to be only r
 The old, python2, client is available in the ```python2``` directory.
 
 ## Author
-The refactored tokehandler for python3 was completely re-written from scratch by Fredrik Eriksson, CERT-SE. Many, many thanks for that.
+The refactored tokehandler for python3 was completely re-written from scratch by Fredrik Eriksson, CERT-SE. Many thanks and mad shouts to him.
 
 ## License
 GPL
