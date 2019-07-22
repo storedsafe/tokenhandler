@@ -3,7 +3,7 @@
 
 """
 when          who                     what
-20190722	  fredrik@storedsafe.com  fixed ssl_context
+20190722      fredrik@storedsafe.com  fixed certificate validation bug
 20181113      fredrik@storedsafe.com  added TOTP as a 2FA mechanism
 20171005      fredrik@storedsafe.com  added timeout and permissions check
 20170601      norin@storedsafe.com    login/refresh   Created
