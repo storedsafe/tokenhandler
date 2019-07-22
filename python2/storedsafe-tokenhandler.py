@@ -3,6 +3,7 @@
 
 """
 when          who                     what
+20190722	  fredrik@storedsafe.com  fixed ssl_context
 20181113      fredrik@storedsafe.com  added TOTP as a 2FA mechanism
 20171005      fredrik@storedsafe.com  added timeout and permissions check
 20170601      norin@storedsafe.com    login/refresh   Created
@@ -29,7 +30,7 @@ from os.path import expanduser
 __author__     = "Peter Norin"
 __copyright__  = "Copyright 2018, AB StoredSafe"
 __license__    = "GPL"
-__version__    = "1.0.3"
+__version__    = "1.0.4"
 __maintainer__ = "Peter Norin"
 __email__      = "norin@storedsafe.com"
 __status__     = "Production"
@@ -142,7 +143,7 @@ def login():
 				'username':userName,
 				'keys':passWord + apiKey + otp
 			}
-		c = httplib.HTTPSConnection(mysite, context=ssl._create_unverified_context())
+		c = httplib.HTTPSConnection(mysite, context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH))
 		c.request("POST", "/api/1.0/auth", json.dumps(loginJson))
 	except:
 		print("No connection to \"%s\". Check network connectivity." % mysite)
@@ -170,6 +171,7 @@ def checktoken():
 	else:
 		print "You need to log on first."
 		sys.exit()
+
 	checkRC(homeDir + '/.storedsafe-client.rc')
 	file_ = open(homeDir + '/.storedsafe-client.rc', 'r')
 	for line in file_:
@@ -222,7 +224,7 @@ def logout():
 	mysite = checksite()
 
 	try:
-		c = httplib.HTTPSConnection(mysite, context=ssl._create_unverified_context())
+		c = httplib.HTTPSConnection(mysite, context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH))
 		c.request("GET", "/api/1.0/auth/logout?token=" + token)
 	except:
 		print("No connection to \"%s\". Check network connectivity." % mysite)
@@ -245,7 +247,7 @@ def check():
 
 	try:
 		checkJson = { 'token':token }
-		c = httplib.HTTPSConnection(mysite, context=ssl._create_unverified_context())
+		c = httplib.HTTPSConnection(mysite, context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH))
 		c.request("POST", "/api/1.0/auth/check", json.dumps(checkJson))
 	except:
 		print("No connection to \"%s\". Check network connectivity." % mysite)
@@ -272,7 +274,7 @@ def checkDir(p):
 			print("Insecure permissions on home directory \"%s\". Exiting." % p)
 			sys.exit()
 	else:
-		print("\"%s\" is not a file." % p)
+		print("\"%s\" is not a directory." % p)
 		sys.exit()
 
 def checkRC(p):
