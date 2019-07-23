@@ -1,115 +1,196 @@
-# storedsafe-tokenhandler
+# tokenhandler
 
-storedsafe-tokenhandler.py is a simple script to login and aquire a token used for subsequent REST API calls to a StoredSafe instance.
+tokenhandler.py is a simple script to login and acquire a token used for subsequent REST API calls to a StoredSafe instance.
 
-It can also be used to keep a token alive, by schedule a ```storedsafe-tokenhandler.py --check``` regulary (e.g. via cron(1)).
+It can also be used to keep a token alive, by scheduling a ```tokenhandler.py check``` regularly (e.g. via cron(1)).
 
-The script is written in Python v2 and has been tested on macOS Sierra and on Linux (any fairly recent version of Ubuntu or Red Hat should work fine).
+The script is written in Python v3 and has been tested on macOS Sierra and on Linux (any fairly recent version of Ubuntu or Red Hat should work fine).
 
 It is designed for version 1.0 of StoredSafes REST-Like API.
 
 ## Installation instructions
 
-This script requires Python v2 and some libraries. All of the required libraries are normally installed by default.
+This script requires Python v3 and some libraries. All of the required libraries are normally installed by default.
 
-It has been developed and tested using Python v2.7.10, on macOS Sierra 10.12.6.
+It has been developed on Linux using Python 3.6, modified and tested using Python v3.7.4 on macOS Mojave 10.14.5.
 
-## Syntax
-
-```
-Usage: storedsafe-tokenhandler.py [-loc]
- --login (or -l)	To login to the StoredSafe appliance
- --logout (or -o)	To logout from the StoredSafe appliance
- --check (or -c)	To check/refresh already obtained token
- --totp (or -t)		Use a TOTP token, instead of a Yubikey OTP token
-
-All actions require that you firstly authenticate in order to obtain a token.
-Once you have a token you can use it to authenticate new REST operations.
-
-Authentication information is saved to ~/.storedsafe-client.rc, be sure to protect it properly.
-```
+# Syntax
 
 ```
---login
+$ tokenhandler.py --help
+usage: tokenhandler.py [-h] [-f FILE] [-q] [-c TRUSTED_CA]
+                       {login,check,logout} ...
+
+Aquire and maintain StoredSafe tokens
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE, --file FILE  File where StoredSafe token is/should be stored
+                        (defaults to ~/.storedsafe-client.rc)
+  -q, --quiet           Silence all output except errors and requests for
+                        input
+  -c TRUSTED_CA, --trusted-ca TRUSTED_CA
+                        File or directory containing certificates of trusted
+                        CAs
+
+action:
+  {login,check,logout}  What to do
+    login               Login to StoredSafe and acquire token
+    check               Renew token if still valid
+    logout              Logout from StoredSafe and disable token
+```
+Optional arguments can be:
+
+```
+--file FILE, -f FILE
+```
+> Store token and relevant information in FILE (Defaults to ```~/.storedsafe-client.rc```)
+
+```
+--quiet, -q
+```
+> Silence all output except errors and requests for input
+
+```
+--trusted-ca TRUSTED_CA, -c TRUSTED_CA
+```
+> File or directory containing certificates of trusted CAs
+
+And action can be any of:
+
+```
+login
 ``` 
-> Login to the StoredSafe appliance, aquire a token and store all relevant information in ```~/.storedsafe-client.rc```
+> Login to the StoredSafe appliance, acquire a token and store all relevant information in ```~/.storedsafe-client.rc```.
 
 ```
---logout
+logout
 ```
-> Logout from the StoredSafe appliance and destroy the aquired token. Zeroes out the token in ```~/.storedsafe-client.rc```
+> Logout from the StoredSafe appliance and destroy the acquired token. Zeroes out the token in ```~/.storedsafe-client.rc```.
 
 ```
---check
+check
 ```
-> Renews the lifetime of the aquired token and ensures connectivity to the StoredSafe appliance. Can be scheduled with cron(1).
+> Renews the lifetime of the acquired token and ensures connectivity to the StoredSafe appliance. Can be scheduled with cron(1).
+
+# Login
+When action is ```login``` the following optional arguments might be used.
 
 ```
---totp
+--username USERNAME, -u USERNAME
 ```
-> Use a TOTP token, instead of a Yubikey OTP token.
-
-Usage
-=====
-Login to the StoredSafe appliance. This will aquire a valid token which can be used for subsequent REST API calls to StoredSafe.
+> StoredSafe username.
 
 ```
-$ storedsafe-tokenhandler.py --login
-Enter username: sven
-Enter API key: AnAPIKey
-Enter site (storedsafe.example.com): safe.domain.cc
-Enter sven's passphrase: <secret password entered>
-Press sven's Yubikey: <OTP generated>
-200 OK
-Login succeeded, please remember to log out when done.
+--hostname HOSTNAME, -h HOSTNAME
+```
+> hostname of StoredSafe server.
+
+```
+--apikey APIKEY, -a APIKEY
+```
+> API-key to use.
+
+### Environment variables
+When action is ```login``` the following optional environment variables might be used.
+
+```
+$ export STOREDSAFE_USER="sven"
+```
+> StoredSafe username.
+
+```
+$ export STOREDSAFE_HOST="safe.domain.cc"
+```
+> hostname of StoredSafe server.
+
+```
+$ export STOREDSAFE_APIKEY="MyAPIKey"
+```
+> API-key to use.
+
+```
+$ export STOREDSAFE_PASS="<super-secret-passphrase>"
+```
+> Passphrase for login.
+
+```
+$ export STOREDSAFE_OTP="<an-yubikey-otp>"
+```
+> OTP (or TOTP) to be used for login.
+
+## Usage
+Login to the StoredSafe appliance. This will acquire a valid token which can be used for subsequent REST API calls to StoredSafe.
+
+```
+$ tokenhandler.py login
+Please enter StoredSafe username: sven
+Please enter StoredSafe hostname: safe.domain.cc
+Please enter StoredSafe apikey: AnAPIKey
+StoredSafe password: <secret password entered>
+Enter OTP (Yubikey or TOTP): <OTP or TOTP>
+Login successful.
+
 ```
 If a previous login has been done (the ```~/.storedsafe-client.rc``` exists), information will be used from it to suggest values.
 
 ```
-$ storedsafe-tokenhandler.py --login
-API key is set to "AnAPIKey", do you want to keep it? (<Y>/n):
-Site is set to "safe.domain.cc", do you want to keep it? (<Y>/n):
-Username is set to "sven", do you want to keep it? (<Y>/n):
-Enter sven's passphrase: <secret password entered>
-Press sven's Yubikey: <OTP generated>
-200 OK
-Login succeeded, please remember to log out when done.
+$ tokenhandler.py login
+StoredSafe password: <secret password entered>
+Enter OTP (Yubikey or TOTP): <OTP or TOTP>
+Login successful.
 ```
 
-The same, but using TOTP instead of a Yubico OTP.
+### Alternative using command line options
+
+Instead of getting prompted for username, hostname and API-key, the information can be provided with the optional arguments valid when the action is login.
 
 ```
-$ storedsafe-tokenhandler.py --login
-API key is set to "AnAPIKey", do you want to keep it? (<Y>/n):
-Site is set to "safe.domain.cc", do you want to keep it? (<Y>/n):
-Username is set to "sven", do you want to keep it? (<Y>/n):
-Enter sven's passphrase: <secret password entered>
-Enter TOTP for sven@safe.domain.cc: 444333
-200 OK
-Login succeeded, please remember to log out when done.
+$ tokenhandler.py login --username sven --hostname safe.domain.cc --apikey MyAPIKey
+StoredSafe password:
+Enter OTP (Yubikey or TOTP): <OTP or TOTP>
+Login successful.
 ```
 
-Check validity of the token, connectivity to the StoredSafe appliance and renew lifetime of the aquired token.
+### Alternative using environment variables
+
+A second alternative, would be to use environment variables to supply the necessary information.
 
 ```
-$ storedsafe-tokenhandler.py --check
-200 OK
+$ STOREDSAFE_USER="sven" STOREDSAFE_HOST="safe.domain.cc" STOREDSAFE_APIKEY="MyAPIKey" STOREDSAFE_PASS="<secret password>" STOREDSAFE_OTP="875124" tokenhandler.py login
+Login successful.
 ```
+### Logout
 
-Logout and destroy the aquired token.
+Logout and destroy the acquired token.
 
 ```
-$ storedsafe-tokenhandler.py --logout
+$ tokenhandler.py logout
 Logout successful.
+```
+
+### Check token
+
+Check validity of the token, connectivity to the StoredSafe appliance and renew lifetime of the acquired token.
+
+```
+$ tokenhandler.py check
+StoredSafe token still valid.
 ```
 
 ## Limitations / Known issues
 
-Script tries to ensure fairly strict permissions on the actual rc-file and the users home directory. If it finds any of those insufficient, it will print an error message and exit.
+Script tries to ensure fairly strict permissions on the actual rc-file and the directory where it is stored. If it finds any of those insufficient, it will print an error message and exit.
 
 ```~/.storedsafe-client.rc``` is expected to be only readable and writeable by it's owner.
 
-The users home directory (~) is expected to be only readable and writeable by it's owner and possibly read permissions for the users group.
+The directory to hold the RC file (when using the ```--file``` option) is expected to be only readable and writeable by it's owner and possibly have read permissions for the users group.
+
+## Legacy
+The old, python2, client is available in the ```python2``` directory.
+
+## Author
+The refactored tokenhandler for python3 was completely re-written from scratch by Fredrik Eriksson, CERT-SE. Many thanks and mad shouts to him for his great work.
 
 ## License
 GPL
