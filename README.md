@@ -1,8 +1,8 @@
 # tokenhandler
 
-tokenhandler.py is a simple script to login and aquire a token used for subsequent REST API calls to a StoredSafe instance.
+tokenhandler.py is a simple script to login and acquire a token used for subsequent REST API calls to a StoredSafe instance.
 
-It can also be used to keep a token alive, by schedule a ```tokenhandler.py check``` regulary (e.g. via cron(1)).
+It can also be used to keep a token alive, by scheduling a ```tokenhandler.py check``` regularly (e.g. via cron(1)).
 
 The script is written in Python v3 and has been tested on macOS Sierra and on Linux (any fairly recent version of Ubuntu or Red Hat should work fine).
 
@@ -12,9 +12,9 @@ It is designed for version 1.0 of StoredSafes REST-Like API.
 
 This script requires Python v3 and some libraries. All of the required libraries are normally installed by default.
 
-It has been developed and tested using Python v3.7.4, on macOS Sierra 10.14.5.
+It has been developed on Linux using Python 3.6, modified and tested using Python v3.7.4 on macOS Mojave 10.14.5.
 
-## Syntax
+# Syntax
 
 ```
 $ tokenhandler.py --help
@@ -35,7 +35,7 @@ optional arguments:
 
 action:
   {login,check,logout}  What to do
-    login               Login to StoredSafe and aquire token
+    login               Login to StoredSafe and acquire token
     check               Renew token if still valid
     logout              Logout from StoredSafe and disable token
 ```
@@ -61,19 +61,19 @@ And action can be any of:
 ```
 login
 ``` 
-> Login to the StoredSafe appliance, aquire a token and store all relevant information in ```~/.storedsafe-client.rc```.
+> Login to the StoredSafe appliance, acquire a token and store all relevant information in ```~/.storedsafe-client.rc```.
 
 ```
 logout
 ```
-> Logout from the StoredSafe appliance and destroy the aquired token. Zeroes out the token in ```~/.storedsafe-client.rc```.
+> Logout from the StoredSafe appliance and destroy the acquired token. Zeroes out the token in ```~/.storedsafe-client.rc```.
 
 ```
 check
 ```
-> Renews the lifetime of the aquired token and ensures connectivity to the StoredSafe appliance. Can be scheduled with cron(1).
+> Renews the lifetime of the acquired token and ensures connectivity to the StoredSafe appliance. Can be scheduled with cron(1).
 
-### Login
+# Login
 When action is ```login``` the following optional arguments might be used.
 
 ```
@@ -91,7 +91,7 @@ When action is ```login``` the following optional arguments might be used.
 ```
 > API-key to use.
 
-#### Environment variables
+### Environment variables
 When action is ```login``` the following optional environment variables might be used.
 
 ```
@@ -119,9 +119,8 @@ $ export STOREDSAFE_OTP="<an-yubikey-otp>"
 ```
 > OTP (or TOTP) to be used for login.
 
-Usage
-=====
-Login to the StoredSafe appliance. This will aquire a valid token which can be used for subsequent REST API calls to StoredSafe.
+## Usage
+Login to the StoredSafe appliance. This will acquire a valid token which can be used for subsequent REST API calls to StoredSafe.
 
 ```
 $ tokenhandler.py login
@@ -142,18 +141,41 @@ Enter OTP (Yubikey or TOTP): <OTP or TOTP>
 Login successful.
 ```
 
-Check validity of the token, connectivity to the StoredSafe appliance and renew lifetime of the aquired token.
+### Alternative using command line options
+
+Instead of getting prompted for username, hostname and API-key, the information can be provided with the optional arguments valid when the action is login.
 
 ```
-$ tokenhandler.py check
-StoredSafe token still valid.
+$ tokenhandler.py login --username sven --hostname safe.domain.cc --apikey MyAPIKey
+StoredSafe password:
+Enter OTP (Yubikey or TOTP): <OTP or TOTP>
+Login successful.
 ```
 
-Logout and destroy the aquired token.
+### Alternative using environment variables
+
+A second alternative, would be to use environment variables to supply the necessary information.
+
+```
+$ STOREDSAFE_USER="sven" STOREDSAFE_HOST="safe.domain.cc" STOREDSAFE_APIKEY="MyAPIKey" STOREDSAFE_PASS="<secret password>" STOREDSAFE_OTP="875124" tokenhandler.py login
+Login successful.
+```
+### Logout
+
+Logout and destroy the acquired token.
 
 ```
 $ tokenhandler.py logout
 Logout successful.
+```
+
+### Check token
+
+Check validity of the token, connectivity to the StoredSafe appliance and renew lifetime of the acquired token.
+
+```
+$ tokenhandler.py check
+StoredSafe token still valid.
 ```
 
 ## Limitations / Known issues
@@ -162,13 +184,13 @@ Script tries to ensure fairly strict permissions on the actual rc-file and the d
 
 ```~/.storedsafe-client.rc``` is expected to be only readable and writeable by it's owner.
 
-The directory to hold the RC file (```--file``` option) is expected to be only readable and writeable by it's owner and possibly have read permissions for the users group.
+The directory to hold the RC file (when using the ```--file``` option) is expected to be only readable and writeable by it's owner and possibly have read permissions for the users group.
 
 ## Legacy
 The old, python2, client is available in the ```python2``` directory.
 
 ## Author
-The refactored tokehandler for python3 was completely re-written from scratch by Fredrik Eriksson, CERT-SE. Many thanks and mad shouts to him.
+The refactored tokenhandler for python3 was completely re-written from scratch by Fredrik Eriksson, CERT-SE. Many thanks and mad shouts to him for his great work.
 
 ## License
 GPL

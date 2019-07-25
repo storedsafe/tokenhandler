@@ -6,7 +6,7 @@ when       who                       what
 2019-07-22 fredrik@storedsafe.com    Minor cosmetic changes.
 2019-07-22 fredrik.eriksson@cert.se  Rewritten from scratch with python3 support.
 
-This is small script to login and aquire a token used for subsequent REST API calls.
+This is small script to login and acquire a token used for subsequent REST API calls.
 It can also be used to keep a token alive, by schedule a 'check' action regulary (e.g. cron(1)).
 
 """
@@ -40,7 +40,7 @@ rc_file_tokens = {
         }
 
 def get_args():
-    parser = argparse.ArgumentParser(description='Aquire and maintain StoredSafe tokens')
+    parser = argparse.ArgumentParser(description='Acquire and maintain StoredSafe tokens')
     
     parser.add_argument('-f', '--file',
             help='File where StoredSafe token is/should be stored (defaults to ~/.storedsafe-client.rc).',
@@ -55,7 +55,7 @@ def get_args():
     subparsers = parser.add_subparsers(title='action', help='What to do')
     subparsers.required = True
     subparsers.dest = 'action'
-    login = subparsers.add_parser('login', help='Login to StoredSafe and aquire token')
+    login = subparsers.add_parser('login', help='Login to StoredSafe and acquire token')
     login.add_argument('-u', '--username', 
             default=os.getenv('STOREDSAFE_USER'),
             help='StoredSafe username.')
