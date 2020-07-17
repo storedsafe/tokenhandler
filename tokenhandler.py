@@ -20,13 +20,13 @@ import os
 import re
 import ssl
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import stat
 
 __author__     = "Fredrik Eriksson"
-__copyright__  = "Copyright 2019, Fredrik Eriksson"
+__copyright__  = "Copyright 2020, Fredrik Eriksson"
 __license__    = "GPL"
-__version__    = "1.0.5"
+__version__    = "1.0.6"
 __maintainer__ = "Fredrik Soderblom"
 __email__      = "fredrik@storedsafe.com"
 __status__     = "Production"
@@ -82,19 +82,21 @@ def main():
             if not args.quiet:
                 log.warning('Token missing, not logged in.')
             sys.exit(1)
-
         res = check(host=params['hostname'], token=params['token'], ca=args.trusted_ca)
         if res['CALLINFO']['status'] == 'SUCCESS':
             if not args.quiet:
                 print('StoredSafe token still valid.')
         else:
-            fail('StoredSafe returned an error: {}'.format(res['ERRORS']))
+            if res['ERRORCODES'].get('1200'):
+              print('Token invalid, not logged in.')
+            else:
+              fail('StoredSafe returned an error: {}'.format(res['ERRORCODES']))
 
     elif args.action == 'logout':
         params = get_ss_login_params(args, batch=True)
         if 'token' not in params:
             if not args.quiet:
-                log.warning('Token missing, not logged in')
+                log.warning('Token missing, not logged in.')
             sys.exit(1)
         res = logout(host=params['hostname'], token=params['token'], ca=args.trusted_ca)
         if res['CALLINFO']['status'] == 'SUCCESS':
@@ -103,7 +105,7 @@ def main():
             if not args.quiet:
                 print('Logout successful.')
         else:
-            fail('StoredSafe returned an error: {}'.format(res['ERRORS']))
+            fail('StoredSafe returned an error: {}'.format(res['ERRORCODES']))
 
     elif args.action == 'login':
         params = get_ss_login_params(args)
@@ -117,7 +119,7 @@ def main():
             if not args.quiet:
                 print('Login successful.')
         else:
-            fail('StoredSafe returned an error: {}'.format(res['ERRORS']))
+            fail('StoredSafe returned an error: {}'.format(res['ERRORCODES']))
 
 def save_ss_login_params(path, params):
     d = os.path.dirname(path)
@@ -149,7 +151,7 @@ def get_ss_login_params(args, batch=False):
     try:
         with open(args.file, 'r') as f:
             for line in f:
-                for name,regex in rc_file_tokens.items():
+                for name,regex in list(rc_file_tokens.items()):
                     match = re.match(regex, line)
                     if match:
                         params[name] = match.group(1)
@@ -162,7 +164,7 @@ def get_ss_login_params(args, batch=False):
             if key in args_dict and args_dict[key]:
                 params[key] = args_dict[key]
             elif not batch:
-                params[key] = input('Please enter StoredSafe {}: '.format(key))
+                params[key] = eval(input('Please enter StoredSafe {}: '.format(key)))
     
     params['password'] = os.getenv('STOREDSAFE_PASS')
     params['otp'] = os.getenv('STOREDSAFE_OTP')
