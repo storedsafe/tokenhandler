@@ -164,7 +164,7 @@ def get_ss_login_params(args, batch=False):
             if key in args_dict and args_dict[key]:
                 params[key] = args_dict[key]
             elif not batch:
-                params[key] = eval(input('Please enter StoredSafe {}: '.format(key)))
+                params[key] = input('Please enter StoredSafe {}: '.format(key))
     
     params['password'] = os.getenv('STOREDSAFE_PASS')
     params['otp'] = os.getenv('STOREDSAFE_OTP')
