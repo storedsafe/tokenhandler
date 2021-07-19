@@ -34,9 +34,9 @@ __status__     = "Production"
 LOG_NAME = 'storedsafe'
 rc_file_tokens = {
         'token': re.compile(r'^token:([a-zA-Z0-9]+)$'),
-        'username': re.compile(r'^username:([a-zA-Z0-9]+)$'),
-        'apikey': re.compile(r'^apikey:([a-zA-Z0-9]+)$'),
-        'hostname': re.compile(r'^mysite:([a-zA-Z0-9.]+)$')
+        'username': re.compile(r'^username:([-a-zA-Z0-9_.@]+)$'),
+        'apikey': re.compile(r'^apikey:([-a-zA-Z0-9]+)$'),
+        'hostname': re.compile(r'^mysite:([-a-zA-Z0-9_.]+)$')
         }
 
 def get_args():
@@ -84,6 +84,12 @@ def main():
             sys.exit(1)
         res = check(host=params['hostname'], token=params['token'], ca=args.trusted_ca)
         if res['CALLINFO']['status'] == 'SUCCESS':
+            # Rotate token if needed
+            # https://developer.storedsafe.com/introduction/index.html#token-rotation
+            if res['CALLINFO']['token'] != res['DATA']['token']:
+                params['token'] = res['CALLINFO']['token']
+                save_ss_login_params(args.file, params)
+
             if not args.quiet:
                 print('StoredSafe token still valid.')
         else:
