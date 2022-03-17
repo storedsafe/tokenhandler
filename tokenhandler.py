@@ -202,10 +202,10 @@ def do_https_req(host, method, url, payload, ca):
     try:
         con = http.client.HTTPSConnection(host, context = ssl_context)
         con.request(method, url, payload)
-    except (http.client.HTTPException, ConnectionError, OSError) as he:
-        fail("Could not contact StoredSafe at https://{}: {}".format(host, he))
     except ssl.CertificateError as ce:
         fail("SSL verification failed for http://{}: {}".format(host, ce))
+    except (http.client.HTTPException, ConnectionError, OSError) as he:
+        fail("Could not contact StoredSafe at https://{}: {}".format(host, he))
     
     response = con.getresponse()
     return json.loads(response.read())
