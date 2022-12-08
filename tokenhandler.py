@@ -95,6 +95,7 @@ def main():
         else:
             if res['ERRORCODES'].get('1200'):
               print('Token invalid, not logged in.')
+              sys.exit(1)
             else:
               fail('StoredSafe returned an error: {}'.format(res['ERRORCODES']))
 
