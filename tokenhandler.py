@@ -228,7 +228,7 @@ def login(username, hostname, apikey, password, otp, ca):
     return do_https_req(hostname, 'POST', '/api/1.0/auth', payload, ca)
 
 def logout(host, token, ca):
-    return do_https_req(host, 'GET', '/api/1.0/auth/logout', { 'token': token }, ca)
+    return do_https_req(host, 'POST', '/api/1.0/auth/logout', { 'token': token }, ca)
 
 def check(host, token, ca):
     return do_https_req(host, 'POST', '/api/1.0/auth/check', { 'token': token }, ca)

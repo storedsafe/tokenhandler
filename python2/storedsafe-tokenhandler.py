@@ -224,8 +224,9 @@ def logout():
 	mysite = checksite()
 
 	try:
+		logoutJson = { 'token': token }
 		c = httplib.HTTPSConnection(mysite, context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH))
-		c.request("GET", "/api/1.0/auth/logout?token=" + token)
+		c.request("POST", "/api/1.0/auth/logout", json.dumps(logoutJson))
 	except:
 		print("No connection to \"%s\". Check network connectivity." % mysite)
 		sys.exit()
